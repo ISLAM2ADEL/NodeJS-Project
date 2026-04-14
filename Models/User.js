@@ -18,7 +18,7 @@ const userSchema = Schema({
   password: {
     type: String,
     required: true,
-    maxLength: [30, "password should be at maximum of 30"],
+    maxLength: [100, "password should be at maximum of 100"],//8yrt el length m3 est5dam el bcrypt el pass bykoon kber
   },
   role: {
     type: String,

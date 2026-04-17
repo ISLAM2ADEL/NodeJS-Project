@@ -1,5 +1,4 @@
 import userModel from "../Models/User.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const generateToken = (user) => {
@@ -26,12 +25,10 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = await userModel.create({
       name,
       email,
-      password: hashedPassword,
+      password, // plain password, pre-save will hash it
       role,
     });
 
@@ -72,7 +69,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -101,8 +98,20 @@ export const loginUser = async (req, res) => {
 
 export const profile = (req, res) => {
   if (req.user.role === "user") {
-    res.status(200).json({ success: true, data: req.user, message: "Welcome to user profile" });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: req.user,
+        message: "Welcome to user profile",
+      });
   } else {
-    res.status(200).json({ success: true, data: req.user, message: "Welcome to admin profile" });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: req.user,
+        message: "Welcome to admin profile",
+      });
   }
 };

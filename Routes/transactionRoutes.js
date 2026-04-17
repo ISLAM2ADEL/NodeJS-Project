@@ -5,7 +5,8 @@ import {
   UpdateTransaction,
   addTransaction,
   deleteTransaction,
-} from "../Controller/TransactionController";
+} from "../Controller/TransactionController.js";
+import { auth } from "../Middleware/auth.js";
 const router = express.Router();
 router.use(auth);
 // Path: /api/v1/transactions

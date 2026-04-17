@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-
+import rateLimit from "express-rate-limit";
 import authRoutes from "./Routes/authRoutes.js";
 import adminRoutes from "./Routes/adminRoutes.js";
 import transactionRoutes from "./Routes/transactionRoutes.js";
@@ -21,6 +21,14 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
 
 app.use(handleError);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+
+app.use("/api", limiter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -2,21 +2,29 @@ import transactionModel from "../Models/Transaction.js";
 
 export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await transactionModel
-      .find({ user: req.user.id })
-      .populate("user");
-
+    const queryObj = { user: req.user.id, ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    let query = transactionModel.find(queryObj);
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("date");
+    }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    const transactions = await query;
     res.status(200).json({
       success: true,
-      count: transactions.length,
+      results: transactions.length,
+      page,
       data: transactions,
-      message: "All transactions fetched successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 

@@ -6,6 +6,8 @@ import adminRoutes from "./Routes/adminRoutes.js";
 import transactionRoutes from "./Routes/transactionRoutes.js";
 import { connectDBs } from "./config/dbconfig.js";
 import { handleError } from "./Middleware/ErrorHandling.js";
+import swaggerUi from "swagger-ui-express";
+import { specs } from "./config/swagger.js";
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
 
 app.use(handleError);
-
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,

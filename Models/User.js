@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const { Schema } = mongoose;
 
-const userSchema = Schema({
+const userSchema = new Schema({
   name: {
     type: String,
     required: [true, "User name is required"],
@@ -18,7 +19,7 @@ const userSchema = Schema({
   password: {
     type: String,
     required: true,
-    maxLength: [30, "password should be at maximum of 30"],
+    maxLength: [100, "password should be at maximum of 100"],
   },
   role: {
     type: String,
@@ -26,6 +27,16 @@ const userSchema = Schema({
     default: "user",
   },
 });
+
+userSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+});
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const userModel = mongoose.model("User", userSchema);
 

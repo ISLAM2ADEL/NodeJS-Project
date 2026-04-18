@@ -19,12 +19,12 @@
 ## 📂 Project Structure
 
 src/
-│── controllers/
-│── models/
-│── routes/
-│── middleware/
 │── config/
-│── utils/
+│── controllers/
+│── middleware/
+│── models/
+│── node-modules/
+│── routes/
 
 
 ## 📡 API Endpoints (Swagger UI)
